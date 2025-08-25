@@ -1,22 +1,24 @@
-# Use an official Node.js image
+# Use official Node.js image
 FROM node:18
 
-# Install pnpm globally
-RUN npm install -g pnpm
+# Install pnpm and a simple HTTP server
+RUN npm install -g pnpm serve
 
-# Set the working directory
+# Set working directory
 WORKDIR /app
 
-# Copy package files first and install dependencies
-COPY pnpm-lock.yaml ./
-COPY package.json ./
+# Copy dependencies files and install
+COPY package.json pnpm-lock.yaml ./
 RUN pnpm install
 
-# Copy the rest of your application code
+# Copy all source code
 COPY . .
 
-# Expose the port your app runs on (change if needed)
+# Build Vite project
+RUN pnpm build
+
+# Expose port for the app
 EXPOSE 3000
 
-# Start the app
-CMD ["pnpm", "start"]
+# Serve the built static files
+CMD ["serve", "-s", "dist", "-l", "3000"]
